@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Cabin:wght@400;600;700&family=Raleway:wght@100;600;900&display=swap');
+
+.button {
+    -fx-background-color: white;
+    -fx-text-fill: #231f20;
+
+}
+
+#loginbtn {
+    -fx-border-style: none;
+    -fx-font: 15 Cabin;
+    -fx-background-insets: 0 0 -1 0,0,1;
+    -fx-background-radius: 5,5,4;
+    -fx-padding: 9 30 9 30;
+    -fx-text-fill: #242d35;
+    -fx-transition: 0.5s;
+}
+
+#loginbtn:hover{
+     -fx-background-color: 
+        linear-gradient(from 0% 93% to 0% 100%, #a34313 0%, #903b12 100%),
+        #9d4024,
+        #d86e3a,
+        radial-gradient(center 50% 50%, radius 100%, #ea7f4b, #c54e2c);
+}
+
+#loginbtn:pressed {
+     -fx-padding: 10 30 10 30;
+    -fx-background-insets: 2 0 0 0,2 0 3 0, 2 0 4 0, 2 0 5 0;
+}
+
+#text {
+    -fx-fill: white;
+    -fx-font: normal x-large bold 30 Cabin;
+}
+
+.root {
+    -fx-background-color: #231f20;
+}
+
+.text-field{
+    -fx-font: 18 Cabin;
+    -fx-min-width: 250;
+    -fx-min-height: 30;
+    -fx-alignment: center;
+    -fx-focus-color: orange ;
+    -fx-faint-focus-color: #d3524422;
+}
+
+#wrongtxt{
+    -fx-fill: red;
+    -fx-font: normal x-large bold 15 Cabin;
+}
