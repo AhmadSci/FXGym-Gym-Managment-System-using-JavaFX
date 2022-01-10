@@ -7,8 +7,8 @@ import java.util.logging.*;
 
 public class dbConn {
     
-    static String dbname = "dbname";
-    static String dbpass = "dbpass";
+    static String dbname = "lab";
+    static String dbpass = "159666";
     public static Connection DBConnection() {
         
          Connection conn = null;
@@ -19,7 +19,7 @@ public class dbConn {
              //cmd :SQLPLUS / AS SYSDBA
              // ALTER USER HR ACCOUNT UNLOCK;
             conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521/XE",dbname,dbpass);
-            System.out.println("sucess connection");
+            System.out.println("success connection");
 
         } catch (Exception ex) {
             System.out.println(ex.toString());

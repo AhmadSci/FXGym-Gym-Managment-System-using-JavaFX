@@ -8,9 +8,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -51,6 +55,7 @@ public class GymSystem extends Application {
     public TextField idtxt;
 //    public List<Customer> CustomerList;
     public Customer C;
+    public FilteredList<Customer> filter;
         
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -220,6 +225,7 @@ public class GymSystem extends Application {
                 System.out.println("no1");
 
             }
+            set();
         });
 //        Clear button
         btn2.setOnAction((ActionEvent event) -> {
@@ -234,7 +240,7 @@ public class GymSystem extends Application {
             drinkstxtc.setText("");
             viptxtc.setText("");
             invtxtc.setText("");
-
+            
         });
 
         Button btn3 = new Button();
@@ -249,14 +255,148 @@ public class GymSystem extends Application {
             primaryStage.setScene(login);
 
         });
+//        Search
+        Label search= new Label("Search");
+        TextField srch= new TextField();
+        srch.setPrefWidth(240);
+        
+        //Wrap the ObservableList in a FilteredList (initially display all data).
+        filter = new FilteredList<>(customerdata, e-> true);
+      
+        //Will be notified whenever the value of the ObservableValue changes.   
+        srch.textProperty().addListener((ObsValue, oldValue, newValue)->{
+                filter.setPredicate(cus ->{
+                    // If filter text is empty, display all students.
+                    if(newValue == null || newValue.isEmpty()){
+                        set();
+                        try {
+                            show();
+                        } catch (SQLException ex) {
+                            Logger.getLogger(GymSystem.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        return true;
+                    }
+                    String s= newValue.toLowerCase();
+                    if(Integer.toString(cus.getID()).contains(newValue)){
+                        return true;
+                    }
+                        
+                    else if(cus.getName().toLowerCase().contains(s)){
+                        return true;
+                    }
+                        
+                    else if(cus.getName2().toLowerCase().contains(s)){
+                        return true;
+                    }
+                        
+                    else if(Integer.toString(cus.getPhoneNum()).toLowerCase().contains(s)){
+                        return true;
+                    }
+                        
+                    else if(Double.toString(cus.getNationalID()).contains(newValue)){
+                        return true;
+                    }
+                        
+                    return false;    
+                });
+                //Wrap the FilteredList in a SortedList.
+            SortedList <Customer> sort= new SortedList<>(filter);
+            sort.comparatorProperty().bind(customertable.comparatorProperty());
+            customertable.setItems(sort);
+        });
+        
+//        Delete
+        Label deletelabel = new Label("Delete Customer");
+        Label deleteid = new Label("ID");
+        TextField deleteidtxt = new TextField();
+        Button deletebtn = new Button("Delete");
+        deletebtn.setId("deletebtn");
 
-        FlowPane table = new FlowPane(g1,v);
+        GridPane deletegrid = new GridPane();
+
+        deletegrid.add(deletelabel, 0, 0, 2, 1);
+        deletegrid.add(deleteid, 0, 1);
+        deletegrid.add(deleteidtxt, 1, 1);
+        deletegrid.add(deletebtn, 0, 3, 2, 1);
+
+        deletegrid.setVgap(10);
+        deletegrid.setHgap(10);
+        deletegrid.setPadding(new Insets(20));
+        
+        
+        deletebtn.setOnAction(e -> {
+            String id = deleteidtxt.getText();
+            String sql = "Delete from CUSTOMERS where id = ?";
+
+            conn = dbConn.DBConnection();
+            try {
+                pst = conn.prepareStatement(sql);
+                pst.setString(1, id);
+                pst.executeUpdate();
+                pst.close();
+                conn.close();
+                show();
+            } catch (Exception ex) {
+                System.out.println(ex.toString());
+            }
+            set();
+
+        });
+ 
+//        Update Info
+        Label updatelabel = new Label("Update Subscription");
+        Label updateid = new Label("ID");
+        TextField updateidtxt = new TextField();
+        Label sublabel = new Label("New Subscription");
+        TextField subtxt = new TextField();
+        Button updatebtn = new Button("Update");
+        updatebtn.setId("updatebtn");
+
+        GridPane updategrid = new GridPane();
+
+        updategrid.add(updatelabel, 0, 0, 2, 1);
+        updategrid.add(updateid, 0, 1);
+        updategrid.add(updateidtxt, 1, 1);
+        updategrid.add(sublabel, 0, 2);
+        updategrid.add(subtxt, 1, 2);
+        updategrid.add(updatebtn, 0, 4, 2, 1);
+
+        updategrid.setVgap(10);
+        updategrid.setHgap(10);
+        updategrid.setPadding(new Insets(20));
+        
+        updatebtn.setOnAction((ActionEvent event) -> {
+
+            String id = updateidtxt.getText();
+            String m = subtxt.getText();
+
+            String sql = "Update CUSTOMERS set SUBSCRIPTION = ? where id = ?";
+            conn = dbConn.DBConnection();
+            try {
+                pst = conn.prepareStatement(sql);
+                pst.setString(1, m);
+                pst.setString(2, id);
+                pst.executeUpdate();
+                pst.close();
+                conn.close();
+                show();
+            } catch (Exception ex) {
+                System.out.println(ex.toString());
+            }
+            set();
+
+        });
+        
+        VBox srsh= new VBox(search, srch, updategrid, deletegrid);
+
+
+        FlowPane table = new FlowPane(g1,v,srsh);
         table.setAlignment(Pos.CENTER);
         VBox managerLayout = new VBox(table, btn3);
         managerLayout.getStylesheets().add("File:src/gym/system/css/ManagerCSS.css");
         managerLayout.setAlignment(Pos.CENTER);
 
-        managerProfile = new Scene(managerLayout, 1280, 720);
+        managerProfile = new Scene(managerLayout, 1500, 720);
         primaryStage.setScene(managerProfile);
         primaryStage.setTitle("Manager");
     }
@@ -473,7 +613,7 @@ public class GymSystem extends Application {
 //    Login Scene
     public void LoginScene(Stage primaryStage) {
     
-        Image image1 = new Image("File:src/gym/system/imgs/Logo.png",150,150, true,true);
+        Image image1 = new Image("File:src\\gym\\system\\imgs/Logo.png",150,150, true,true);
         ImageView logoview = new ImageView(image1);
         
         
@@ -525,7 +665,7 @@ public class GymSystem extends Application {
         root.getStyleClass().add("root");
         
         login = new Scene(root, 600, 600);
-        login.getStylesheets().add("File:src/gym/system/css/LoginCSS.css");
+        login.getStylesheets().add(getClass().getResource("css/LoginCSS.css").toExternalForm());
         primaryStage.minWidthProperty().bind(login.heightProperty().multiply(1.5));
         primaryStage.minHeightProperty().bind(login.widthProperty().divide(2));
         
@@ -558,4 +698,7 @@ public class GymSystem extends Application {
         customertable.setItems(customerdata);
     }
     
+    public void set() {
+        filter = new FilteredList<>(customerdata, e-> true);
+    } 
 }
