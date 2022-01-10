@@ -7,8 +7,8 @@ import java.util.logging.*;
 
 public class dbConn {
     
-    static String dbname = "lab";
-    static String dbpass = "159666";
+    static String dbname = "dbname";
+    static String dbpass = "dbpass";
     public static Connection DBConnection() {
         
          Connection conn = null;
