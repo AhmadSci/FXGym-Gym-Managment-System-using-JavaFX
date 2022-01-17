@@ -32,7 +32,7 @@
 # Usage
 1. First you need to add the [ojdbc6.jar](ojdbc6.jar) Library to the Project, and use [JDK 1.8.0_311](https://www.oracle.com/java/technologies/javase/javase8-archive-downloads.html)
 &nbsp;
-2. in the [dbConn.java](src\gym\system\dbConn.java) file change the dbname and dbpass Strings
+2. in the [dbConn.java](src/gym/system/dbConn.java) file change the dbname and dbpass Strings
 &nbsp;
 ![dbConn](src/gym/system/imgs/change.jpg)
 
